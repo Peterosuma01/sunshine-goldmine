@@ -47,25 +47,33 @@
       document.getElementById('quarterly').style.display = tab === 'quarterly' ? 'block' : 'none';
     }
 
-    // Fetch Overview Summary
-    fetch("https://script.google.com/macros/s/AKfycbwOCufPjkayPfyEvFkZED6VWCyst1r0jiL7zBR-XUd1BoscwMT1I2WJnBknKL3D4sYY/exec")
-      .then(res => res.json())
-      .then(data => {
-        document.querySelector('#overview .card').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-      })
-      .catch(err => {
-        document.querySelector('#overview .card').innerHTML = "Error loading overview data.";
-      });
+    // JSONP for Overview Summary
+    function loadOverview() {
+      const url = "https://script.google.com/macros/s/AKfycbwOCufPjkayPfyEvFkZED6VWCyst1r0jiL7zBR-XUd1BoscwMT1I2WJnBknKL3D4sYY/exec?callback=overviewCallback";
+      const script = document.createElement("script");
+      script.src = url;
+      document.body.appendChild(script);
+    }
 
-    // Fetch Quarterly Data
-    fetch("https://script.google.com/macros/s/AKfycbyOH2fOsR-tIUUd4jVfHLthX4fB0Gie-ft98PLEZznK2HGqZxM89JIk4rcSvK6aSw/exec")
-      .then(res => res.json())
-      .then(data => {
-        document.querySelector('#quarterly .card').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-      })
-      .catch(err => {
-        document.querySelector('#quarterly .card').innerHTML = "Error loading quarterly data.";
-      });
+    function overviewCallback(data) {
+      document.querySelector('#overview .card').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+    }
+
+    // JSONP for Quarterly Financial Statement
+    function loadQuarterly() {
+      const url = "https://script.google.com/macros/s/AKfycbyOH2fOsR-tIUUd4jVfHLthX4fB0Gie-ft98PLEZznK2HGqZxM89JIk4rcSvK6aSw/exec?callback=quarterlyCallback";
+      const script = document.createElement("script");
+      script.src = url;
+      document.body.appendChild(script);
+    }
+
+    function quarterlyCallback(data) {
+      document.querySelector('#quarterly .card').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+    }
+
+    // Load both JSONP calls on page load
+    loadOverview();
+    loadQuarterly();
   </script>
 </body>
 </html>
