@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sansteel SACCO Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
+    header { background: #003366; color: white; padding: 20px; text-align: center; }
+    nav { display: flex; justify-content: center; gap: 20px; padding: 15px; background: #e0e0e0; }
+    nav button { padding: 10px 20px; border: none; background: #003366; color: white; cursor: pointer; border-radius: 5px; }
+    nav button:hover { background: #0055aa; }
+    section { padding: 20px; display: none; }
+    .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Sansteel SACCO Dashboard</h1>
+    <p>Overview Summary & Quarterly Financial Statement</p>
+  </header>
+
+  <nav>
+    <button onclick="showTab('overview')">Overview Summary</button>
+    <button onclick="showTab('quarterly')">Quarterly Financial Statement</button>
+  </nav>
+
+  <!-- Overview Section -->
+  <section id="overview" style="display:block;">
+    <h2>Overview Summary</h2>
+    <div class="card">
+      <p>Loading overview summary...</p>
+    </div>
+  </section>
+
+  <!-- Quarterly Section -->
+  <section id="quarterly">
+    <h2>Quarterly Financial Statement</h2>
+    <div class="card">
+      <p>Loading quarterly data...</p>
+    </div>
+  </section>
+
+  <script>
+    function showTab(tab) {
+      document.getElementById('overview').style.display = tab === 'overview' ? 'block' : 'none';
+      document.getElementById('quarterly').style.display = tab === 'quarterly' ? 'block' : 'none';
+    }
+
+    // Fetch Overview Summary
+    fetch("https://script.google.com/macros/s/AKfycbwOCufPjkayPfyEvFkZED6VWCyst1r0jiL7zBR-XUd1BoscwMT1I2WJnBknKL3D4sYY/exec")
+      .then(res => res.json())
+      .then(data => {
+        document.querySelector('#overview .card').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+      })
+      .catch(err => {
+        document.querySelector('#overview .card').innerHTML = "Error loading overview data.";
+      });
+
+    // Fetch Quarterly Data
+    fetch("https://script.google.com/macros/s/AKfycbyOH2fOsR-tIUUd4jVfHLthX4fB0Gie-ft98PLEZznK2HGqZxM89JIk4rcSvK6aSw/exec")
+      .then(res => res.json())
+      .then(data => {
+        document.querySelector('#quarterly .card').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+      })
+      .catch(err => {
+        document.querySelector('#quarterly .card').innerHTML = "Error loading quarterly data.";
+      });
+  </script>
+</body>
+</html>
