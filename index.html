@@ -1,79 +1,266 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sansteel SACCO Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#667eea">
+  <meta name="description" content="Sunshine Goldmine Agency - Your Path to Financial Freedom">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Sunshine Goldmine">
+  
+  <title>Sunshine Goldmine Agency</title>
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- iOS Icons -->
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180x180.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="icons/icon-120x120.png">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16x16.png">
+  
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
-    header { background: #003366; color: white; padding: 20px; text-align: center; }
-    nav { display: flex; justify-content: center; gap: 20px; padding: 15px; background: #e0e0e0; }
-    nav button { padding: 10px 20px; border: none; background: #003366; color: white; cursor: pointer; border-radius: 5px; }
-    nav button:hover { background: #0055aa; }
-    section { padding: 20px; display: none; }
-    .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    
+    /* Loading screen */
+    #loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s;
+    }
+    
+    #loading.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    .loader {
+      width: 60px;
+      height: 60px;
+      border: 6px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    #loading h1 {
+      color: white;
+      margin-top: 30px;
+      font-size: 24px;
+      text-align: center;
+      padding: 0 20px;
+    }
+    
+    #loading p {
+      color: rgba(255, 255, 255, 0.9);
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    
+    /* App iframe */
+    #app-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+    
+    /* Install prompt */
+    #install-prompt {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      padding: 15px 25px;
+      border-radius: 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      display: none;
+      align-items: center;
+      gap: 15px;
+      z-index: 10000;
+      max-width: 90%;
+    }
+    
+    #install-prompt.show {
+      display: flex;
+      animation: slideUp 0.3s ease-out;
+    }
+    
+    @keyframes slideUp {
+      from {
+        transform: translateX(-50%) translateY(100px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    #install-prompt button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    #install-prompt .close {
+      background: #f0f0f0;
+      color: #333;
+      padding: 5px 12px;
+    }
+    
+    /* Offline indicator */
+    #offline-indicator {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: #ef4444;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      display: none;
+      z-index: 10001;
+    }
+    
+    #offline-indicator.show {
+      display: block;
+    }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Sansteel SACCO Dashboard</h1>
-    <p>Overview Summary & Quarterly Financial Statement</p>
-  </header>
-
-  <nav>
-    <button onclick="showTab('overview')">Overview Summary</button>
-    <button onclick="showTab('quarterly')">Quarterly Financial Statement</button>
-  </nav>
-
-  <!-- Overview Section -->
-  <section id="overview" style="display:block;">
-    <h2>Overview Summary</h2>
-    <div class="card">
-      <p>Loading overview summary...</p>
-    </div>
-  </section>
-
-  <!-- Quarterly Section -->
-  <section id="quarterly">
-    <h2>Quarterly Financial Statement</h2>
-    <div class="card">
-      <p>Loading quarterly data...</p>
-    </div>
-  </section>
-
+  <!-- Loading Screen -->
+  <div id="loading">
+    <div class="loader"></div>
+    <h1>☀️ Sunshine Goldmine Agency</h1>
+    <p>Loading your dashboard...</p>
+  </div>
+  
+  <!-- Offline Indicator -->
+  <div id="offline-indicator">
+    ⚠️ You are offline. Some features may not work.
+  </div>
+  
+  <!-- Install Prompt -->
+  <div id="install-prompt">
+    <span>📱 Install Sunshine Goldmine app for quick access!</span>
+    <button id="install-btn">Install</button>
+    <button class="close" id="dismiss-btn">Later</button>
+  </div>
+  
+  <!-- App Frame -->
+  <iframe 
+    id="app-frame"
+    src="https://script.google.com/macros/s/AKfycbzsxajJyN5icrrkV0ypx1GNQI9GVGuZ-l4QdKSGFTL42tpAgPU8H4KGuzjl5J5FvKFh/exec"
+    allow="clipboard-write"
+  ></iframe>
+  
   <script>
-    function showTab(tab) {
-      document.getElementById('overview').style.display = tab === 'overview' ? 'block' : 'none';
-      document.getElementById('quarterly').style.display = tab === 'quarterly' ? 'block' : 'none';
+    // Hide loading screen when iframe loads
+    const appFrame = document.getElementById('app-frame');
+    const loading = document.getElementById('loading');
+    
+    appFrame.addEventListener('load', function() {
+      setTimeout(() => {
+        loading.classList.add('hidden');
+      }, 500);
+    });
+    
+    // PWA Install Prompt
+    let deferredPrompt;
+    const installPrompt = document.getElementById('install-prompt');
+    const installBtn = document.getElementById('install-btn');
+    const dismissBtn = document.getElementById('dismiss-btn');
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Prevent the mini-infobar from appearing on mobile
+      e.preventDefault();
+      // Stash the event so it can be triggered later
+      deferredPrompt = e;
+      // Show install prompt after 3 seconds
+      setTimeout(() => {
+        installPrompt.classList.add('show');
+      }, 3000);
+    });
+    
+    installBtn.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      
+      // Show the install prompt
+      deferredPrompt.prompt();
+      
+      // Wait for the user to respond
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`User response: ${outcome}`);
+      
+      // Clear the deferredPrompt
+      deferredPrompt = null;
+      installPrompt.classList.remove('show');
+    });
+    
+    dismissBtn.addEventListener('click', () => {
+      installPrompt.classList.remove('show');
+    });
+    
+    // Online/Offline Detection
+    const offlineIndicator = document.getElementById('offline-indicator');
+    
+    window.addEventListener('online', () => {
+      offlineIndicator.classList.remove('show');
+    });
+    
+    window.addEventListener('offline', () => {
+      offlineIndicator.classList.add('show');
+    });
+    
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(registration => {
+            console.log('Service Worker registered:', registration);
+          })
+          .catch(error => {
+            console.log('Service Worker registration failed:', error);
+          });
+      });
     }
-
-    // JSONP for Overview Summary
-    function loadOverview() {
-      const url = "https://script.google.com/macros/s/AKfycbwOCufPjkayPfyEvFkZED6VWCyst1r0jiL7zBR-XUd1BoscwMT1I2WJnBknKL3D4sYY/exec?callback=overviewCallback";
-      const script = document.createElement("script");
-      script.src = url;
-      document.body.appendChild(script);
-    }
-
-    function overviewCallback(data) {
-      document.querySelector('#overview .card').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-    }
-
-    // JSONP for Quarterly Financial Statement
-    function loadQuarterly() {
-      const url = "https://script.google.com/macros/s/AKfycbyOH2fOsR-tIUUd4jVfHLthX4fB0Gie-ft98PLEZznK2HGqZxM89JIk4rcSvK6aSw/exec?callback=quarterlyCallback";
-      const script = document.createElement("script");
-      script.src = url;
-      document.body.appendChild(script);
-    }
-
-    function quarterlyCallback(data) {
-      document.querySelector('#quarterly .card').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-    }
-
-    // Load both JSONP calls on page load
-    loadOverview();
-    loadQuarterly();
   </script>
 </body>
 </html>
