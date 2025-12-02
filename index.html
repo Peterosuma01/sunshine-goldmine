@@ -185,77 +185,30 @@
   </div>
   
   <!-- App Frame -->
- <iframe 
-  id="app-frame"
-  src=""
-  allow="clipboard-write"
-></iframe>
-
-<script>
-  // ============================================
-  // 🔧 PASS URL PARAMETERS TO IFRAME
-  // ============================================
-  const appFrame = document.getElementById('app-frame');
-  const loading = document.getElementById('loading');
+  <iframe 
+    id="app-frame"
+    src="https://script.google.com/macros/s/AKfycbzsxajJyN5icrrkV0ypx1GNQI9GVGuZ-l4QdKSGFTL42tpAgPU8H4KGuzjl5J5FvKFh/exec"
+    allow="clipboard-write"
+  ></iframe>
   
-  // Get the current page URL parameters (like ?ref=REF123456)
-  const urlParams = new URLSearchParams(window.location.search);
-  
-  // Base Google Apps Script URL
-  const baseScriptUrl = 'https://script.google.com/macros/s/AKfycbzsxajJyN5icrrkV0ypx1GNQI9GVGuZ-l4QdKSGFTL42tpAgPU8H4KGuzjl5J5FvKFh/exec';
-  
-  // Build iframe URL with parameters
-  let iframeUrl = baseScriptUrl;
-  if (urlParams.toString()) {
-    iframeUrl += '?' + urlParams.toString();
-  }
-  
-  // Set iframe source (parameters won't work due to Google Apps Script redirect)
-appFrame.src = baseScriptUrl;
-console.log('Loading iframe with URL:', baseScriptUrl);
-
-// ============================================
-// 🚀 SEND REFERRAL CODE VIA postMessage
-// ============================================
-// Wait for iframe to load, then send referral code
-appFrame.addEventListener('load', function() {
-  const refCode = urlParams.get('ref');
-  
-  if (refCode) {
-    console.log('Sending referral code to iframe:', refCode);
+  <script>
+    // ============================================
+    // 🚀 SIMPLE IFRAME LOADING
+    // ============================================
+    const appFrame = document.getElementById('app-frame');
+    const loading = document.getElementById('loading');
     
-    // Send message to iframe with referral code
-    appFrame.contentWindow.postMessage({
-      type: 'REFERRAL_CODE',
-      code: refCode
-    }, '*');
+    // Hide loading screen when iframe loads
+    appFrame.addEventListener('load', function() {
+      setTimeout(() => {
+        loading.classList.add('hidden');
+      }, 500);
+    });
+    // ============================================
     
-    // Send multiple times to ensure it's received
-    setTimeout(() => {
-      appFrame.contentWindow.postMessage({
-        type: 'REFERRAL_CODE',
-        code: refCode
-      }, '*');
-    }, 500);
-    
-    setTimeout(() => {
-      appFrame.contentWindow.postMessage({
-        type: 'REFERRAL_CODE',
-        code: refCode
-      }, '*');
-    }, 1000);
-  }
-});
-  // ============================================
-  
-  // Hide loading screen when iframe loads
-  appFrame.addEventListener('load', function() {
-    setTimeout(() => {
-      loading.classList.add('hidden');
-    }, 500);
-  });
-    
-    // PWA Install Prompt
+    // ============================================
+    // 📱 PWA Install Prompt
+    // ============================================
     let deferredPrompt;
     const installPrompt = document.getElementById('install-prompt');
     const installBtn = document.getElementById('install-btn');
@@ -290,8 +243,11 @@ appFrame.addEventListener('load', function() {
     dismissBtn.addEventListener('click', () => {
       installPrompt.classList.remove('show');
     });
+    // ============================================
     
-    // Online/Offline Detection
+    // ============================================
+    // 🌐 Online/Offline Detection
+    // ============================================
     const offlineIndicator = document.getElementById('offline-indicator');
     
     window.addEventListener('online', () => {
@@ -301,8 +257,11 @@ appFrame.addEventListener('load', function() {
     window.addEventListener('offline', () => {
       offlineIndicator.classList.add('show');
     });
+    // ============================================
     
-    // Register Service Worker
+    // ============================================
+    // ⚙️ Register Service Worker
+    // ============================================
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('service-worker.js')
@@ -314,10 +273,7 @@ appFrame.addEventListener('load', function() {
           });
       });
     }
+    // ============================================
   </script>
 </body>
 </html>
-
-
-
-
