@@ -210,9 +210,42 @@
     iframeUrl += '?' + urlParams.toString();
   }
   
-  // Set iframe source with parameters
-  appFrame.src = iframeUrl;
-  console.log('Loading iframe with URL:', iframeUrl);
+  // Set iframe source (parameters won't work due to Google Apps Script redirect)
+appFrame.src = baseScriptUrl;
+console.log('Loading iframe with URL:', baseScriptUrl);
+
+// ============================================
+// 🚀 SEND REFERRAL CODE VIA postMessage
+// ============================================
+// Wait for iframe to load, then send referral code
+appFrame.addEventListener('load', function() {
+  const refCode = urlParams.get('ref');
+  
+  if (refCode) {
+    console.log('Sending referral code to iframe:', refCode);
+    
+    // Send message to iframe with referral code
+    appFrame.contentWindow.postMessage({
+      type: 'REFERRAL_CODE',
+      code: refCode
+    }, '*');
+    
+    // Send multiple times to ensure it's received
+    setTimeout(() => {
+      appFrame.contentWindow.postMessage({
+        type: 'REFERRAL_CODE',
+        code: refCode
+      }, '*');
+    }, 500);
+    
+    setTimeout(() => {
+      appFrame.contentWindow.postMessage({
+        type: 'REFERRAL_CODE',
+        code: refCode
+      }, '*');
+    }, 1000);
+  }
+});
   // ============================================
   
   // Hide loading screen when iframe loads
@@ -284,6 +317,7 @@
   </script>
 </body>
 </html>
+
 
 
 
